@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* interval between updates (in ms) */
-const unsigned int interval = 1000;
+const unsigned int interval = 10000;
 
 /* text to show if no value can be retrieved */
 static const char unknown_str[] = "n/a";
@@ -65,11 +65,11 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
     /* function format          argument */
-    /* {disk_used, "[DISK %s ", "/home/iamb4uc/"}, */
-    /* {disk_total, "/ %s] ", "/home/iamb4uc/"}, */
-    /* {ram_perc, "[RAM %s%% ", NULL}, */
-    /* {cpu_perc, "CPU %s%%] ", NULL}, */
-    {battery_perc, "[BAT %s%%] ", "BAT0"},
-    {datetime, "[%s]", "%a %b %d %H:%M:%S"},
-    /* {hostname, "[%s]", NULL}, */
+    /*{disk_used, "[DISK %s ", "/home/iamb4uc/"},*/
+    /*{disk_total, "/ %s] ", "/home/iamb4uc/"},*/
+    /*{ram_perc, "[RAM %s%% ", NULL},*/
+    /*{cpu_perc, "CPU %s%%] ", NULL},*/
+    {battery_perc, "[ BAT %s%% ] ", "BAT0"},
+    {datetime, "[ %s ]", "%b %d | %H:%M"},
+    /*{hostname, "[%s]", NULL},*/
 };
