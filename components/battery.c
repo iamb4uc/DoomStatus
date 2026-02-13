@@ -1,8 +1,77 @@
 /* See LICENSE file for copyright and license details. */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "../util.h"
+
+struct blink_cfg {
+	char bat[64];
+	int has_bat;
+	int threshold;
+	int period;
+	char symbol[32];
+};
+
+static void
+parse_blink_args(const char *arg, struct blink_cfg *cfg)
+{
+	char buf[128];
+	char *p, *field, *end;
+	int field_idx = 0;
+	long val;
+
+	memset(cfg, 0, sizeof(*cfg));
+	cfg->threshold = 15;
+	cfg->period = 1;
+	esnprintf(cfg->symbol, sizeof(cfg->symbol), "!");
+
+	if (!arg || !*arg) {
+		return;
+	}
+
+	if (esnprintf(buf, sizeof(buf), "%s", arg) < 0) {
+		return;
+	}
+
+	p = buf;
+	while (p && field_idx < 4) {
+		field = p;
+		p = strchr(p, ':');
+		if (p) {
+			*p++ = '\0';
+		}
+
+		switch (field_idx) {
+		case 0:
+			if (field[0]) {
+				esnprintf(cfg->bat, sizeof(cfg->bat), "%s", field);
+				cfg->has_bat = 1;
+			}
+			break;
+		case 1:
+			val = strtol(field, &end, 10);
+			if (end != field && *end == '\0' && val > 0 && val <= 100) {
+				cfg->threshold = (int)val;
+			}
+			break;
+		case 2:
+			val = strtol(field, &end, 10);
+			if (end != field && *end == '\0' && val > 0) {
+				cfg->period = (int)val;
+			}
+			break;
+		case 3:
+			if (field[0]) {
+				esnprintf(cfg->symbol, sizeof(cfg->symbol), "%s", field);
+			}
+			break;
+		}
+
+		field_idx++;
+	}
+}
 
 #if defined(__linux__)
 	#include <limits.h>
@@ -116,6 +185,50 @@
 
 		return "";
 	}
+
+	const char *
+	battery_blink(const char *arg)
+	{
+		struct blink_cfg cfg;
+		int perc;
+		char path[PATH_MAX], state[12];
+		time_t now;
+
+		parse_blink_args(arg, &cfg);
+		if (!cfg.has_bat) {
+			return NULL;
+		}
+
+		if (esnprintf(path, sizeof(path),
+		              "/sys/class/power_supply/%s/capacity",
+		              cfg.bat) < 0) {
+			return NULL;
+		}
+		if (pscanf(path, "%d", &perc) != 1) {
+			return NULL;
+		}
+		if (perc > cfg.threshold) {
+			return "";
+		}
+
+		if (esnprintf(path, sizeof(path),
+		              "/sys/class/power_supply/%s/status",
+		              cfg.bat) < 0) {
+			return NULL;
+		}
+		if (pscanf(path, "%12s", state) != 1) {
+			return NULL;
+		}
+		if (strcmp(state, "Discharging") != 0) {
+			return "";
+		}
+
+		now = time(NULL);
+		if (now == (time_t)-1 || (now / cfg.period) % 2 == 0) {
+			return bprintf("%s", cfg.symbol);
+		}
+		return "";
+	}
 #elif defined(__OpenBSD__)
 	#include <fcntl.h>
 	#include <machine/apmvar.h>
@@ -196,6 +309,32 @@
 
 		return NULL;
 	}
+
+	const char *
+	battery_blink(const char *arg)
+	{
+		struct blink_cfg cfg;
+		struct apm_power_info apm_info;
+		time_t now;
+
+		parse_blink_args(arg, &cfg);
+
+		if (!load_apm_power_info(&apm_info)) {
+			return NULL;
+		}
+		if (apm_info.battery_life > cfg.threshold) {
+			return "";
+		}
+		if (apm_info.ac_state != APM_AC_OFF) {
+			return "";
+		}
+
+		now = time(NULL);
+		if (now == (time_t)-1 || (now / cfg.period) % 2 == 0) {
+			return bprintf("%s", cfg.symbol);
+		}
+		return "";
+	}
 #elif defined(__FreeBSD__)
 	#include <sys/sysctl.h>
 
@@ -248,5 +387,40 @@
 			return NULL;
 
 		return bprintf("%uh %02um", rem / 60, rem % 60);
+	}
+
+	const char *
+	battery_blink(const char *arg)
+	{
+		struct blink_cfg cfg;
+		int cap, state;
+		size_t len;
+		time_t now;
+
+		parse_blink_args(arg, &cfg);
+
+		len = sizeof(cap);
+		if (sysctlbyname("hw.acpi.battery.life", &cap, &len, NULL, 0) == -1
+				|| !len)
+			return NULL;
+
+		if (cap > cfg.threshold) {
+			return "";
+		}
+
+		len = sizeof(state);
+		if (sysctlbyname("hw.acpi.battery.state", &state, &len, NULL, 0) == -1
+				|| !len)
+			return NULL;
+
+		if (state != 1) {
+			return "";
+		}
+
+		now = time(NULL);
+		if (now == (time_t)-1 || (now / cfg.period) % 2 == 0) {
+			return bprintf("%s", cfg.symbol);
+		}
+		return "";
 	}
 #endif
