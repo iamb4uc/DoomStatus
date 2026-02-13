@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* interval between updates (in ms) */
-const unsigned int interval = 10000;
+const unsigned int interval = 1000;
 
 /* text to show if no value can be retrieved */
 static const char unknown_str[] = "n/a";
@@ -18,6 +18,8 @@ static const char unknown_str[] = "n/a";
  *                                                     NULL on OpenBSD/FreeBSD
  * battery_remaining   battery remaining HH:MM         battery name (BAT0)
  *                                                     NULL on OpenBSD/FreeBSD
+ * battery_blink       blinking low-battery warning    bat:threshold:period:symbol
+ *                                                     (BAT0:20:1:! )
  * cpu_perc            cpu usage in percent            NULL
  * cpu_freq            cpu frequency in MHz            NULL
  * datetime            date and time                   format string (%F %T)
@@ -65,11 +67,12 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
     /* function format          argument */
-    /*{disk_used, "[DISK %s ", "/home/iamb4uc/"},*/
-    /*{disk_total, "/ %s] ", "/home/iamb4uc/"},*/
-    /*{ram_perc, "[RAM %s%% ", NULL},*/
-    /*{cpu_perc, "CPU %s%%] ", NULL},*/
-    {battery_perc, "[ BAT %s%% ] ", "BAT0"},
-    {datetime, "[ %s ]", "%b %d | %H:%M"},
-    /*{hostname, "[%s]", NULL},*/
+    {battery_blink, "%s", "BAT0:20:1:⚠ "},
+    {battery_state, "%s", "BAT0"},
+    {battery_perc, " %s%%", "BAT0"},
+    {battery_remaining, " %s ", "BAT0"},
+    {run_command, "🔊 %s%% ", "pamixer --get-volume"},
+    {disk_perc, "💾 %s%% ", "/"},
+    {separator, "• ", NULL},
+    {datetime, "🕒 %s ", "%b %d %G | %H:%M:%S"},
 };
