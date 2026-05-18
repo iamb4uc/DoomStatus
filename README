@@ -1,7 +1,7 @@
 DoomStatus - customized suckless status
 ======================================
 DoomStatus is a customized suckless status monitor for window managers that use WM_NAME
-(e.g. dwm) or stdin to fill the status bar.
+(e.g. DoomWM) or stdin to fill the status bar.
 
 
 Features
@@ -38,7 +38,7 @@ In order to build DoomStatus you need the Xlib header files.
 
 Installation
 ------------
-Edit config.mk to match your local setup (DoomStatus is installed into the
+Edit config.mk to match your local setup (`doomstatus` is installed into the
 /usr/local namespace by default).
 
 Afterwards enter the following command to build and install DoomStatus (if
@@ -49,7 +49,8 @@ necessary as root):
 
 Running DoomStatus
 ------------------
-See the man page for details.
+Run `doomstatus` from your DoomDots autostart or another X session startup
+hook. See the man page for details.
 
 
 Configuration

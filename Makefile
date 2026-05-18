@@ -29,10 +29,10 @@ COM =\
 	components/volume\
 	components/wifi
 
-all: DoomStatus
+all: doomstatus
 
 $(COM:=.o): config.mk $(REQ:=.h)
-DoomStatus.o: DoomStatus.c DoomStatus.h arg.h config.h config.mk $(REQ:=.h)
+doomstatus.o: doomstatus.c doomstatus.h arg.h config.h config.mk $(REQ:=.h)
 
 .c.o:
 	$(CC) -o $@ -c $(CPPFLAGS) $(CFLAGS) $<
@@ -40,29 +40,29 @@ DoomStatus.o: DoomStatus.c DoomStatus.h arg.h config.h config.mk $(REQ:=.h)
 config.h:
 	cp config.def.h $@
 
-DoomStatus: DoomStatus.o $(COM:=.o) $(REQ:=.o)
-	$(CC) -o $@ $(LDFLAGS) $(COM:=.o) $(REQ:=.o) DoomStatus.o $(LDLIBS)
+doomstatus: doomstatus.o $(COM:=.o) $(REQ:=.o)
+	$(CC) -o $@ $(LDFLAGS) $(COM:=.o) $(REQ:=.o) doomstatus.o $(LDLIBS)
 
 clean:
-	rm -f DoomStatus DoomStatus.o $(COM:=.o) $(REQ:=.o)
+	rm -f doomstatus doomstatus.o DoomStatus DoomStatus.o $(COM:=.o) $(REQ:=.o)
 
 dist:
-	rm -rf "DoomStatus-$(VERSION)"
-	mkdir -p "DoomStatus-$(VERSION)/components"
+	rm -rf "doomstatus-$(VERSION)"
+	mkdir -p "doomstatus-$(VERSION)/components"
 	cp -R LICENSE Makefile README config.mk config.def.h \
-	      arg.h DoomStatus.c $(COM:=.c) $(REQ:=.c) $(REQ:=.h) \
-	      DoomStatus.1 "DoomStatus-$(VERSION)"
-	tar -cf - "DoomStatus-$(VERSION)" | gzip -c > "DoomStatus-$(VERSION).tar.gz"
-	rm -rf "DoomStatus-$(VERSION)"
+	      arg.h doomstatus.c $(COM:=.c) $(REQ:=.c) $(REQ:=.h) \
+	      doomstatus.1 "doomstatus-$(VERSION)"
+	tar -cf - "doomstatus-$(VERSION)" | gzip -c > "doomstatus-$(VERSION).tar.gz"
+	rm -rf "doomstatus-$(VERSION)"
 
 install: all
 	mkdir -p "$(DESTDIR)$(PREFIX)/bin"
-	cp -f DoomStatus "$(DESTDIR)$(PREFIX)/bin"
-	chmod 755 "$(DESTDIR)$(PREFIX)/bin/DoomStatus"
+	cp -f doomstatus "$(DESTDIR)$(PREFIX)/bin"
+	chmod 755 "$(DESTDIR)$(PREFIX)/bin/doomstatus"
 	mkdir -p "$(DESTDIR)$(MANPREFIX)/man1"
-	cp -f DoomStatus.1 "$(DESTDIR)$(MANPREFIX)/man1"
-	chmod 644 "$(DESTDIR)$(MANPREFIX)/man1/DoomStatus.1"
+	cp -f doomstatus.1 "$(DESTDIR)$(MANPREFIX)/man1"
+	chmod 644 "$(DESTDIR)$(MANPREFIX)/man1/doomstatus.1"
 
 uninstall:
-	rm -f "$(DESTDIR)$(PREFIX)/bin/DoomStatus"
-	rm -f "$(DESTDIR)$(MANPREFIX)/man1/DoomStatus.1"
+	rm -f "$(DESTDIR)$(PREFIX)/bin/doomstatus"
+	rm -f "$(DESTDIR)$(MANPREFIX)/man1/doomstatus.1"
