@@ -8,7 +8,7 @@
 #include <X11/Xlib.h>
 
 #include "arg.h"
-#include "slstatus.h"
+#include "DoomStatus.h"
 #include "util.h"
 
 struct arg {

@@ -1,6 +1,6 @@
-slstatus - suckless status
-==========================
-slstatus is a suckless status monitor for window managers that use WM_NAME
+DoomStatus - customized suckless status
+======================================
+DoomStatus is a customized suckless status monitor for window managers that use WM_NAME
 (e.g. dwm) or stdin to fill the status bar.
 
 
@@ -32,29 +32,29 @@ Features
 
 Requirements
 ------------
-Currently slstatus works on FreeBSD, Linux and OpenBSD.
-In order to build slstatus you need the Xlib header files.
+Currently DoomStatus works on FreeBSD, Linux and OpenBSD.
+In order to build DoomStatus you need the Xlib header files.
 
 
 Installation
 ------------
-Edit config.mk to match your local setup (slstatus is installed into the
+Edit config.mk to match your local setup (DoomStatus is installed into the
 /usr/local namespace by default).
 
-Afterwards enter the following command to build and install slstatus (if
+Afterwards enter the following command to build and install DoomStatus (if
 necessary as root):
 
     make clean install
 
 
-Running slstatus
-----------------
+Running DoomStatus
+------------------
 See the man page for details.
 
 
 Configuration
 -------------
-slstatus can be customized by creating a custom config.h and (re)compiling the
+DoomStatus can be customized by creating a custom config.h and (re)compiling the
 source code. This keeps it fast, secure and simple.
 
 

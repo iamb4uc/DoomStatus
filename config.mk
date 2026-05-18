@@ -1,4 +1,4 @@
-# slstatus version
+# DoomStatus version
 VERSION = 0
 
 # customize below to fit your system
